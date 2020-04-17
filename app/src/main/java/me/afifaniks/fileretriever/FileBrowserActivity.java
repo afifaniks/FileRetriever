@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.DataInputStream;
@@ -25,6 +26,7 @@ public class FileBrowserActivity extends AppCompatActivity {
 
     public static Socket clientSocket;
     private ListView listView;
+    private TextView currentLocation;
     private static ListAdapter listAdapter;
     private static ArrayList<FileHandler> fileList;
     private static DecimalFormat df = new DecimalFormat("0.00");
@@ -38,6 +40,9 @@ public class FileBrowserActivity extends AppCompatActivity {
         path = getIntent().getStringExtra("pathToExplore");
 
         listView = findViewById(R.id.listFile);
+        currentLocation = findViewById(R.id.txtLocation);
+
+        currentLocation.setText(path);
 
         Browse browse = new Browse(this);
 
@@ -69,16 +74,8 @@ public class FileBrowserActivity extends AppCompatActivity {
                                     }})
                                 .setNegativeButton(android.R.string.no, null).show();
                     } else {
-                        String pathToBrowse = clickedItem.getPath();
-                        try {
-                            ArrayList<FileHandler> newFileList = new Browse(FileBrowserActivity.this).execute(pathToBrowse).get();
-                            // Set Files
-                            changeListItem(newFileList);
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        path = clickedItem.getPath();
+                        updateLocation(path);
                     }
                 }
             });
@@ -92,10 +89,39 @@ public class FileBrowserActivity extends AppCompatActivity {
         }
     }
 
+    private void updateLocation(String pathTo) {
+        try {
+            ArrayList<FileHandler> newFileList = new Browse(FileBrowserActivity.this).execute(pathTo).get();
+            // Set Location
+            currentLocation.setText(pathTo);
+            // Set Files
+            changeListItem(newFileList);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void changeListItem(ArrayList<FileHandler> list) {
         fileList.clear();
         fileList.addAll(list);
         listAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!path.equals("root")) {
+            if (path.length() == 3)
+                path = "root";
+            else {
+                path = path.substring(0, path.lastIndexOf("\\"));
+                if (path.length() == 2)
+                    path += "\\";
+            }
+            updateLocation(path);
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

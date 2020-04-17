@@ -2,6 +2,7 @@ package me.afifaniks.fileretriever;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
     Context context;
     String fileName;
     String filePath;
+    String pathToSave;
     Integer fileSize;
 
     public Download(Context context) {
@@ -60,10 +62,12 @@ public class Download extends AsyncTask<String, Integer, Void> {
             System.out.println("Folder Created: " + folder.mkdirs());
         }
 
+        pathToSave = downloadPath + File.separator + fileName;
+
         FileOutputStream fos = null;
 
         try {
-            fos = new FileOutputStream(downloadPath + "/" + fileName);
+            fos = new FileOutputStream(pathToSave);
             byte[] buffer = new byte[BUFFER_SIZE];
             int read = 0;
             int totalRead = 0;
@@ -74,7 +78,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
             while ((read = dInputStream.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
                 totalRead += read;
                 remaining -= read;
-                System.out.println("read " + totalRead + " bytes.");
+//                System.out.println("read " + totalRead + " bytes.");
 
                 publishProgress((totalRead * 100)/fileSize);
 
@@ -95,17 +99,33 @@ public class Download extends AsyncTask<String, Integer, Void> {
     @Override
     protected void onProgressUpdate(Integer... values) {
         progressDialog.setProgress(values[0]);
+        progressDialog.setMessage("Downloading file: " + filePath);
     }
 
     @Override
     protected void onPreExecute() {
         progressDialog = new ProgressDialog(context);
-
-        progressDialog.setTitle("Downloading");
+        progressDialog.setMessage("Downloading file: " + filePath);
+        progressDialog.setTitle("Download Started");
         progressDialog.setMax(100);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setIndeterminate(false);
 
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Download.this.cancel(true);
+                        File file = new File(pathToSave);
+                        if (file.delete()) {
+                            System.out.println("Deleted Incomplete Download");
+                        } else {
+                            System.out.println("Couldn't Delete Incomplete Download");
+                        }
+                        dialog.dismiss();
+                    }
+                });
         progressDialog.show();
 
     }

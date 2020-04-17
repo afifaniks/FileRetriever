@@ -8,6 +8,29 @@
     android:background="#fff"
     tools:context=".FileBrowserActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/location"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtLocation"
+            android:layout_marginLeft="5dp"
+            android:textSize="16dp"
+            android:textColor="#000"
+            android:ellipsize="start"
+            android:singleLine="true"
+            />
+    </LinearLayout>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
