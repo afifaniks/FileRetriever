@@ -2,6 +2,7 @@ package me.afifaniks.fileretriever;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.view.View;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -81,10 +83,19 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
     @Override
     protected void onPreExecute() {
         progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle("Loading Contents");
+        progressDialog.setTitle("Loading Data");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Please wait while we finish loading...");
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Browse.this.cancel(true);
+                        dialog.dismiss();
+                    }
+                });
         progressDialog.show();
 
     }

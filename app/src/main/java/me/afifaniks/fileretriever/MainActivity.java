@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -53,12 +54,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        System.out.println(Environment.getExternalStorageDirectory() + "PATH");
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE}, 1);
-//        }
-
         verifyStoragePermissions(this);
 
         ipField = findViewById(R.id.txtIP);
@@ -71,28 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 String ip = ipField.getText().toString();
                 String port = portField.getText().toString();
 
-                Client client = new Client();
+                Client client = new Client(MainActivity.this);
+                client.execute(ip, port);
 
-                try {
-                    clientSocket = client.execute(ip, port).get();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if (clientSocket.isConnected()) {
-                    Intent fileBrowser = new Intent(MainActivity.this, FileBrowserActivity.class);
-                    try {
-                        clientSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    fileBrowser.putExtra("pathToExplore", "root");
-                    fileBrowser.putExtra("ip", ip);
-                    fileBrowser.putExtra("port", port);
-                    startActivity(fileBrowser);
-                }
             }
         });
 
