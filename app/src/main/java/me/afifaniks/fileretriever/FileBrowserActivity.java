@@ -1,12 +1,15 @@
 package me.afifaniks.fileretriever;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -31,6 +34,9 @@ public class FileBrowserActivity extends AppCompatActivity {
     private static ListAdapter listAdapter;
     private static ArrayList<FileHandler> fileList = new ArrayList<>();
     private static DecimalFormat df = new DecimalFormat("0.00");
+    private boolean BACK_PRESSED_TWICE = false;
+    private String ip;
+    private Integer port;
     String path;
 
     @Override
@@ -39,6 +45,8 @@ public class FileBrowserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_file_browser);
 
         path = getIntent().getStringExtra("pathToExplore");
+        ip = getIntent().getStringExtra("ip");
+        port = Integer.valueOf(getIntent().getStringExtra("port"));
 
         listView = findViewById(R.id.listFile);
         currentLocation = findViewById(R.id.txtLocation);
@@ -46,7 +54,7 @@ public class FileBrowserActivity extends AppCompatActivity {
 
         currentLocation.setText(path);
 
-        Browse browse = new Browse(this);
+        Browse browse = new Browse(this, ip, port);
 
         browse.execute(path);
 
@@ -70,7 +78,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                             .setIcon(R.drawable.download)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    new Download(FileBrowserActivity.this).execute(
+                                    new Download(FileBrowserActivity.this, ip, port).execute(
                                             clickedItem.getName(),
                                             clickedItem.getPath(),
                                             String.valueOf(clickedItem.getSize()));
@@ -79,7 +87,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                 } else {
                     path = clickedItem.getPath();
                     currentLocation.setText(path);
-                    new Browse(FileBrowserActivity.this).execute(path);
+                    new Browse(FileBrowserActivity.this, ip, port).execute(path);
                 }
             }
         });
@@ -94,6 +102,7 @@ public class FileBrowserActivity extends AppCompatActivity {
         listAdapter.notifyDataSetChanged();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onBackPressed() {
         if (!path.equals("root")) {
@@ -106,10 +115,24 @@ public class FileBrowserActivity extends AppCompatActivity {
             }
 
             currentLocation.setText(path);
-            new Browse(FileBrowserActivity.this).execute(path);
+            new Browse(FileBrowserActivity.this, ip, port).execute(path);
 
         } else {
-            super.onBackPressed();
+            if (BACK_PRESSED_TWICE) {
+                this.finishAffinity();
+            }
+
+            BACK_PRESSED_TWICE = true;
+
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    BACK_PRESSED_TWICE = false;
+                }
+            }, 2000);
         }
     }
 }

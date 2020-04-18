@@ -26,26 +26,29 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
     private ProgressDialog progressDialog = null;
     private Context context;
     final static String BROWSE_REQUEST = "::2";
+    String ip;
+    Integer port;
 
-    public Browse(Context context) {
+    public Browse(Context context, String ip, Integer port) {
         this.context = context;
+        this.ip = ip;
+        this.port = port;
     }
 
     @Override
     protected ArrayList<FileHandler> doInBackground(String... strings) {
         String dir = strings[0]; // Directory of root to be browsed
 
-        Socket s = FileBrowserActivity.clientSocket;
-
-        System.out.println(s.isConnected() + "SOCKET CHECK");
-
-        DataOutputStream dOutputStream = null;
-        DataInputStream dataInputStream = null;
-
-        JSONArray fileList;
-        ArrayList<FileHandler> files = new ArrayList<>();
-
+        Socket s = null;
         try {
+            s = new Socket(ip, port);
+            System.out.println(s.isConnected() + "SOCKET CHECK");
+
+            DataOutputStream dOutputStream = null;
+            DataInputStream dataInputStream = null;
+
+            JSONArray fileList;
+            ArrayList<FileHandler> files = new ArrayList<>();
             dOutputStream = new DataOutputStream(s.getOutputStream());
             dataInputStream = new DataInputStream(s.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
@@ -65,10 +68,10 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
                         Long.valueOf(fileList.getJSONObject(i).get("size").toString())
                 ));
             }
+            s.close();
             return files;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 

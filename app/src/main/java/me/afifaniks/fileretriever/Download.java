@@ -25,10 +25,14 @@ public class Download extends AsyncTask<String, Integer, Void> {
     String fileName;
     String filePath;
     String pathToSave;
+    String ip;
+    Integer port;
     Integer fileSize;
 
-    public Download(Context context) {
+    public Download(Context context, String ip, Integer port) {
         this.context = context;
+        this.ip = ip;
+        this.port = port;
     }
 
     @Override
@@ -42,9 +46,10 @@ public class Download extends AsyncTask<String, Integer, Void> {
         DataOutputStream dataOutputStream = null;
 
         try {
+            s = new Socket(ip, port);
+
             dInputStream = new DataInputStream(s.getInputStream());
             dataOutputStream = new DataOutputStream(s.getOutputStream());
-
 
             dataOutputStream.writeUTF(DOWNLOAD_REQUEST + filePath);
 
@@ -86,12 +91,12 @@ public class Download extends AsyncTask<String, Integer, Void> {
             }
 
             fos.close();
+            s.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return null;
     }

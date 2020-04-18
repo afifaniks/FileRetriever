@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutionException;
 
@@ -80,13 +81,18 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                System.out.println(clientSocket.isConnected());
-
-                FileBrowserActivity.clientSocket = clientSocket;
-
-                Intent fileBrowser = new Intent(MainActivity.this, FileBrowserActivity.class);
-                fileBrowser.putExtra("pathToExplore", "root");
-                startActivity(fileBrowser);
+                if (clientSocket.isConnected()) {
+                    Intent fileBrowser = new Intent(MainActivity.this, FileBrowserActivity.class);
+                    try {
+                        clientSocket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    fileBrowser.putExtra("pathToExplore", "root");
+                    fileBrowser.putExtra("ip", ip);
+                    fileBrowser.putExtra("port", port);
+                    startActivity(fileBrowser);
+                }
             }
         });
 
