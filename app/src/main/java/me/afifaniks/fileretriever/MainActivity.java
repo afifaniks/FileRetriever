@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
     EditText portField;
     Button connectBtn;
     private static Socket clientSocket = null;
-
+    private static String ip;
+    private static String port;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().setElevation(0);
+
         verifyStoragePermissions(this);
 
         ipField = findViewById(R.id.txtIP);
@@ -63,14 +66,20 @@ public class MainActivity extends AppCompatActivity {
         connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String ip = ipField.getText().toString();
-                String port = portField.getText().toString();
+                ip = ipField.getText().toString();
+                port = portField.getText().toString();
 
                 Client client = new Client(MainActivity.this);
                 client.execute(ip, port);
 
             }
         });
+
+        // Trying initially to connect
+        ip = ipField.getText().toString();
+        port = portField.getText().toString();
+
+        new Client(this).execute(ip, port);
 
     }
 }
