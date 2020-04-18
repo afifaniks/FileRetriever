@@ -28,7 +28,7 @@ public class FileBrowserActivity extends AppCompatActivity {
     private ListView listView;
     private TextView currentLocation;
     private static ListAdapter listAdapter;
-    private static ArrayList<FileHandler> fileList;
+    private static ArrayList<FileHandler> fileList = new ArrayList<>();
     private static DecimalFormat df = new DecimalFormat("0.00");
     String path;
 
@@ -46,61 +46,43 @@ public class FileBrowserActivity extends AppCompatActivity {
 
         Browse browse = new Browse(this);
 
-        try {
-            fileList = browse.execute(path).get();
+        browse.execute(path);
 
-            listAdapter = new ListAdapter(FileBrowserActivity.this, fileList);
+        fileList.add(new FileHandler("", "", "", 0)); // Adding dummy list
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final FileHandler clickedItem = (FileHandler) parent.getItemAtPosition(position);
 
-                    String type = clickedItem.getType();
+        listAdapter = new ListAdapter(FileBrowserActivity.this, fileList);
 
-                    if (type.equals("file")) {
-                        new AlertDialog.Builder(FileBrowserActivity.this)
-                                .setTitle("Confirm Download")
-                                .setMessage("Do you want to download file of size " +
-                                        df.format(clickedItem.getSize() * 0.000001) +
-                                        " MB?")
-                                .setIcon(R.drawable.download)
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        new Download(FileBrowserActivity.this).execute(
-                                                clickedItem.getName(),
-                                                clickedItem.getPath(),
-                                                String.valueOf(clickedItem.getSize()));
-                                    }})
-                                .setNegativeButton(android.R.string.no, null).show();
-                    } else {
-                        path = clickedItem.getPath();
-                        updateLocation(path);
-                    }
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final FileHandler clickedItem = (FileHandler) parent.getItemAtPosition(position);
+
+                String type = clickedItem.getType();
+
+                if (type.equals("file")) {
+                    new AlertDialog.Builder(FileBrowserActivity.this)
+                            .setTitle("Confirm Download")
+                            .setMessage("File Path: " + clickedItem.path + "\n\n" +
+                                    "File Size: " + df.format(clickedItem.getSize() * 0.000001) + " MB")
+                            .setIcon(R.drawable.download)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    new Download(FileBrowserActivity.this).execute(
+                                            clickedItem.getName(),
+                                            clickedItem.getPath(),
+                                            String.valueOf(clickedItem.getSize()));
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                } else {
+                    path = clickedItem.getPath();
+                    currentLocation.setText(path);
+                    new Browse(FileBrowserActivity.this).execute(path);
                 }
-            });
+            }
+        });
 
-            listView.setAdapter(listAdapter);
-
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateLocation(String pathTo) {
-        try {
-            ArrayList<FileHandler> newFileList = new Browse(FileBrowserActivity.this).execute(pathTo).get();
-            // Set Location
-            currentLocation.setText(pathTo);
-            // Set Files
-            changeListItem(newFileList);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        listView.setAdapter(listAdapter);
     }
 
     public static void changeListItem(ArrayList<FileHandler> list) {
@@ -119,7 +101,10 @@ public class FileBrowserActivity extends AppCompatActivity {
                 if (path.length() == 2)
                     path += "\\";
             }
-            updateLocation(path);
+
+            currentLocation.setText(path);
+            new Browse(FileBrowserActivity.this).execute(path);
+
         } else {
             super.onBackPressed();
         }

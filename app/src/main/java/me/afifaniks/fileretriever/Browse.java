@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
     private ProgressDialog progressDialog = null;
-    private ProgressBar progressBar = null;
     private Context context;
     final static String BROWSE_REQUEST = "::2";
 
@@ -50,13 +49,10 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
             dOutputStream = new DataOutputStream(s.getOutputStream());
             dataInputStream = new DataInputStream(s.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
-//            objectInputStream = new ObjectInputStream(s.getInputStream());
 
             System.out.println("Requesting Files...");
             dOutputStream.writeUTF(BROWSE_REQUEST + dir);
             System.out.println("File List...");
-
-//            String response = dataInputStream.readUTF();
 
             fileList = new JSONArray(bufferedReader.readLine());
             int numberOfItems = fileList.length();
@@ -79,22 +75,20 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
         return null;
     }
 
-
     @Override
     protected void onPreExecute() {
-        System.out.println("RUNNNNINFG");
         progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Loading Contents");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
-        progressDialog.setProgress(0);
+        progressDialog.setMessage("Please wait while we finish loading...");
         progressDialog.show();
 
     }
 
     @Override
     protected void onPostExecute(ArrayList<FileHandler> list) {
-
+        FileBrowserActivity.changeListItem(list);
         progressDialog.dismiss();
     }
 
