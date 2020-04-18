@@ -88,7 +88,8 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
 
     @Override
     protected void onPostExecute(ArrayList<FileHandler> list) {
-        FileBrowserActivity.changeListItem(list);
+        FileBrowserActivity f = (FileBrowserActivity)context;
+        f.changeListItem(list);
         progressDialog.dismiss();
     }
 

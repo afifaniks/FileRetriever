@@ -27,6 +27,7 @@ public class FileBrowserActivity extends AppCompatActivity {
     public static Socket clientSocket;
     private ListView listView;
     private TextView currentLocation;
+    private TextView totalFiles;
     private static ListAdapter listAdapter;
     private static ArrayList<FileHandler> fileList = new ArrayList<>();
     private static DecimalFormat df = new DecimalFormat("0.00");
@@ -41,6 +42,7 @@ public class FileBrowserActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.listFile);
         currentLocation = findViewById(R.id.txtLocation);
+        totalFiles = findViewById(R.id.txtTotalFiles);
 
         currentLocation.setText(path);
 
@@ -85,9 +87,10 @@ public class FileBrowserActivity extends AppCompatActivity {
         listView.setAdapter(listAdapter);
     }
 
-    public static void changeListItem(ArrayList<FileHandler> list) {
+    public void changeListItem(ArrayList<FileHandler> list) {
         fileList.clear();
         fileList.addAll(list);
+        totalFiles.setText("Total Files: " + list.size());
         listAdapter.notifyDataSetChanged();
     }
 

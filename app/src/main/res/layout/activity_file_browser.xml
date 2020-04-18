@@ -11,30 +11,47 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/location"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/location"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtLocation"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
+                android:textSize="16dp"
+                android:textColor="@color/colorWhite"
+                android:ellipsize="start"
+                android:singleLine="true"
+                />
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/txtLocation"
-            android:layout_marginLeft="5dp"
-            android:textSize="16dp"
-            android:textColor="#000"
-            android:ellipsize="start"
-            android:singleLine="true"
-            />
+            android:layout_margin="5dp"
+            android:id="@+id/txtTotalFiles"
+            android:text="Total Files: "
+            android:textColor="@color/colorWhite"/>
+
     </LinearLayout>
 
     <ListView
         android:drawSelectorOnTop="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="0.1dp"
         android:id="@+id/listFile"/>
 
 </LinearLayout>
