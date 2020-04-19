@@ -100,7 +100,18 @@ public class FileBrowserActivity extends AppCompatActivity {
     public void changeListItem(ArrayList<FileHandler> list) {
         fileList.clear();
         fileList.addAll(list);
-        totalFiles.setText("Total Files: " + list.size());
+
+        int numOfFiles = 0;
+        int numOfDirs = 0;
+
+        for (FileHandler f: fileList) {
+            if (f.getType().equals("file")) {
+                numOfFiles++;
+            } else {
+                numOfDirs++;
+            }
+        }
+        totalFiles.setText("Total Files: " + list.size() + " (Directory: " + numOfDirs + ", File: " + numOfFiles + ")");
         listAdapter.notifyDataSetChanged();
     }
 
