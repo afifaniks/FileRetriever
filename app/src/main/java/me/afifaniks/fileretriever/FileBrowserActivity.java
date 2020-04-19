@@ -108,7 +108,7 @@ public class FileBrowserActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (!path.equals("root")) {
-            if (path.length() == 3)
+            if (path.length() == 3) // Drives C:/, D:/ ... length of 3
                 path = "root";
             else {
                 path = path.substring(0, path.lastIndexOf("\\"));
