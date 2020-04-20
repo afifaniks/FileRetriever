@@ -44,7 +44,7 @@ public class FileBrowserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_browser);
 
-        getSupportActionBar().setElevation(0);
+//        getSupportActionBar().setElevation(0);
 
         path = getIntent().getStringExtra("pathToExplore");
         ip = getIntent().getStringExtra("ip");

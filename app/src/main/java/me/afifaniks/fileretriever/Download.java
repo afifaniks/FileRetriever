@@ -80,14 +80,13 @@ public class Download extends AsyncTask<String, Integer, Void> {
             boolean ftpDownloadStatus = false;
 
             System.out.println("File Size: " + fileSize + " TCP: " + TCP_SIZE_LIMIT);
-            if (fileSize > TCP_SIZE_LIMIT) {
-//                progressDialog.setMessage("File is large. Trying to establish FTP connection.");
 
+            if (fileSize > TCP_SIZE_LIMIT) {
                 dataOutputStream.writeUTF(FTP_DOWNLOAD_REQUEST + filePath);
                 String ftpPort = dInputStream.readUTF(); // Should return port number of server; -1 is failure
 
                 if (!ftpPort.equals("-1")) {
-//                    progressDialog.setMessage("FTP connection established.");
+                    progressDialog.setMessage("Downloading using FTP connection");
 
                     long startTime = System.currentTimeMillis();
 

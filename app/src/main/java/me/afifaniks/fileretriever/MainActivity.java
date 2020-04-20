@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     EditText ipField;
     EditText portField;
     Button connectBtn;
-    private static Socket clientSocket = null;
     private static String ip;
     private static String port;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -54,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        getSupportActionBar().setElevation(0);
 
         verifyStoragePermissions(this);
 

@@ -33,7 +33,7 @@
         android:textSize="20dp"
         android:layout_marginBottom="15dp"
         android:textAlignment="center"
-        android:text="6969"
+        android:text="19051"
         android:inputType="numberDecimal"
         android:digits="0123456789"/>
 
