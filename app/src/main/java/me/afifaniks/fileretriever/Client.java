@@ -53,15 +53,7 @@ public class Client extends AsyncTask <String, Void, Socket> {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Please wait while we try to establish a connection with the server...");
-//        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-//                "Cancel",
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Client.this.cancel(true);
-//                        dialog.dismiss();
-//                    }
-//                });
+        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
     }
 
@@ -71,7 +63,7 @@ public class Client extends AsyncTask <String, Void, Socket> {
             progressDialog.dismiss();
             new AlertDialog.Builder(context)
                     .setTitle("Connection Failure")
-                    .setMessage("Couldn't connect! Make sure your PC is connected to the same network, recheck ip and port.")
+                    .setMessage("Make sure your PC Server Agent is connected to the same network and recheck ip and port.")
                     .setIcon(R.drawable.warning)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {

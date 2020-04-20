@@ -89,7 +89,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
 
             System.out.println("File Size: " + fileSize + " TCP: " + TCP_SIZE_LIMIT);
 
-            if (fileSize > TCP_SIZE_LIMIT) {
+            if (fileSize > TCP_SIZE_LIMIT) { // TODO: Gotta FIX FTP Speed. ONLY THEN I CAN USE THIS BLOCK
                 dataOutputStream.writeUTF(FTP_DOWNLOAD_REQUEST + filePath);
                 String ftpPort = dInputStream.readUTF(); // Should return port number of server; -1 is failure
 
@@ -218,7 +218,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
                 .setMessage("File Downloaded Successfully" + "\n" +
                         "Time Taken: " + df.format(timeTaken) + "s\n" +
                         "Avg. Transfer Rate: " + df.format((fileSize*0.000001)/timeTaken) +"MBps")
-                .setIcon(R.drawable.warning)
+                .setIcon(R.drawable.success)
                 .setPositiveButton("Show Files", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
