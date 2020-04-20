@@ -3,9 +3,13 @@ package me.afifaniks.fileretriever;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
@@ -25,6 +29,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 
 public class Download extends AsyncTask<String, Integer, Void> {
     final static String DOWNLOAD_REQUEST = "::1";
@@ -38,11 +43,14 @@ public class Download extends AsyncTask<String, Integer, Void> {
     Context context;
     String fileName;
     String filePath;
+    String downloadPath;
     String pathToSave;
     String ip;
     Integer port;
     Integer fileSize;
+    double timeTaken;
     Socket s = null;
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
     public Download(Context context, String ip, Integer port) {
         this.context = context;
@@ -65,7 +73,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
             dInputStream = new DataInputStream(s.getInputStream());
             dataOutputStream = new DataOutputStream(s.getOutputStream());
 
-            String downloadPath = Environment.getExternalStorageDirectory().toString() + File.separator + "FileRetriever";
+            downloadPath = Environment.getExternalStorageDirectory().toString() + File.separator + "FileRetriever";
 
             File folder = new File(downloadPath);
 
@@ -99,7 +107,8 @@ public class Download extends AsyncTask<String, Integer, Void> {
                         ftpDownloadStatus = true;
 
                         long estimatedTime = System.currentTimeMillis() - startTime;
-                        System.out.println("Time Taken: " + estimatedTime);
+
+                        timeTaken = estimatedTime/1000.0;
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -134,7 +143,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
 
                     long estimatedTime = System.currentTimeMillis() - startTime;
 
-                    System.out.println("Time Taken: " + estimatedTime);
+                    timeTaken = estimatedTime/1000.0;
 
                     fos.close();
 
@@ -168,7 +177,8 @@ public class Download extends AsyncTask<String, Integer, Void> {
         progressDialog.setMax(100);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setIndeterminate(false);
-
+//        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                 "Cancel",
                 new DialogInterface.OnClickListener() {
@@ -176,22 +186,26 @@ public class Download extends AsyncTask<String, Integer, Void> {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             Download.this.cancel(true);
-
+                            System.out.println("OK DELETING");
                             if (ftp != null) {
                                 disconnect(); // To close ftp if exists
                             }
+
+                            dialog.dismiss();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
                             File file = new File(pathToSave);
                             if (file.delete()) {
                                 System.out.println("Deleted Incomplete Download");
                             } else {
                                 System.out.println("Couldn't Delete Incomplete Download");
                             }
-                            dialog.dismiss();
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
                     }
                 });
+
         progressDialog.show();
 
     }
@@ -199,6 +213,19 @@ public class Download extends AsyncTask<String, Integer, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         Toast.makeText(context, "File Download Complete", Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(context)
+                .setTitle("Download Completed")
+                .setMessage("File Downloaded Successfully" + "\n" +
+                        "Time Taken: " + df.format(timeTaken) + "s\n" +
+                        "Avg. Transfer Rate: " + df.format((fileSize*0.000001)/timeTaken) +"MBps")
+                .setIcon(R.drawable.warning)
+                .setPositiveButton("Show Files", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        Uri uri = Uri.parse(downloadPath); // a directory
+                        intent.setDataAndType(uri, "*/*");
+                        context.startActivity(Intent.createChooser(intent, "Open Folder"));
+                    }}).setNegativeButton("CLOSE", null).show();
         progressDialog.dismiss();
     }
 
@@ -207,7 +234,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
         int reply;
         ftp.connect(host, port);
-        ftp.setBufferSize(0);
+        ftp.setBufferSize(1024*1024);
         reply = ftp.getReplyCode();
         if (!FTPReply.isPositiveCompletion(reply)) {
             ftp.disconnect();
@@ -215,7 +242,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
         }
         ftp.login(user, pwd);
         ftp.setFileType(FTP.BINARY_FILE_TYPE);
-        ftp.enterLocalPassiveMode();
+        ftp.enterLocalActiveMode();
     }
 
     public void downloadFileFTP (String remoteFilePath, String localFilePath) {
@@ -234,7 +261,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
                 outputStream2.write(bytesArray, 0, bytesRead);
                 total += bytesRead;
                 publishProgress((total*100)/fileSize);
-                System.out.println("Downloaded FTP " + total + " % " + (total*100)/fileSize);
+//                System.out.println("Downloaded FTP " + total + " % " + (total*100)/fileSize);
             }
 
             boolean success = ftp.completePendingCommand();
@@ -259,10 +286,10 @@ public class Download extends AsyncTask<String, Integer, Void> {
         }
     }
     public void disconnect() {
-        if (this.ftp.isConnected()) {
+        if (ftp.isConnected()) {
             try {
-                this.ftp.logout();
-                this.ftp.disconnect();
+//                this.ftp.logout();
+                ftp.disconnect();
                 ftp = null;
             } catch (IOException f) {
                 // do nothing as file is already downloaded from FTP server
