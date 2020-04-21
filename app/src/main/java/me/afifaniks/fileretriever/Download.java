@@ -48,7 +48,7 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
     String pathToSave;
     String ip;
     Integer port;
-    Integer fileSize;
+    Long fileSize;
     double timeTaken;
     Socket s = null;
     private static final DecimalFormat df = new DecimalFormat("0.00");
@@ -59,11 +59,15 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
         this.port = port;
     }
 
+    private int safeMin(long a, long b) { // Considers the min value will always be in int range as buffer_size is int
+        return a < b ? (int) a : (int) b;
+    }
+
     @Override
     protected Boolean doInBackground(String... strings) {
         fileName = strings[0];
         filePath = strings[1];
-        fileSize = Integer.valueOf(strings[2]);
+        fileSize = Long.valueOf(strings[2]);
 
         DataInputStream dInputStream = null;
         DataOutputStream dataOutputStream = null;
@@ -123,7 +127,6 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
 
             if (!ftpDownloadStatus) {
                 try {
-//                    progressDialog.setTitle("Download Started");
                     progressDialog.setMessage("Downloading using TCP connecttion");
                     dataOutputStream.writeUTF(DOWNLOAD_REQUEST + filePath);
                     FileOutputStream fos = null;
@@ -131,17 +134,19 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
                     byte[] buffer = new byte[BUFFER_SIZE];
                     int read = 0;
                     int totalRead = 0;
-                    int remaining = fileSize;
+                    long remaining = fileSize;
+                    double completed = 0;
 
                     publishProgress(0);
 
                     long startTime = System.currentTimeMillis();
 
-                    while ((read = dInputStream.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
+                    while ((read = dInputStream.read(buffer, 0, safeMin(buffer.length, remaining))) > 0) {
                         totalRead += read;
                         remaining -= read;
 
-                        publishProgress((totalRead * 100)/fileSize);
+                        completed = (totalRead * 100.0 / fileSize);
+                        publishProgress((int) Math.round(completed));
 
                         fos.write(buffer, 0, read);
                     }
@@ -170,6 +175,7 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
 
     @Override
     protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
         progressDialog.setProgress(values[0]);
         progressDialog.setTitle("Downloading...");
         progressDialog.setMessage("Downloading file: " + filePath);
@@ -251,7 +257,7 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
         int reply;
         ftp.connect(host, port);
-        ftp.setBufferSize(1024*1024);
+        ftp.setBufferSize(BUFFER_SIZE_FTP);
         reply = ftp.getReplyCode();
         if (!FTPReply.isPositiveCompletion(reply)) {
             ftp.disconnect();
@@ -274,11 +280,14 @@ public class Download extends AsyncTask<String, Integer, Boolean> {
             int total = 0;
 
             int bytesRead = -1;
+            double completed =  0;
+
             while ((bytesRead = inputStream.read(bytesArray)) != -1) {
                 outputStream2.write(bytesArray, 0, bytesRead);
                 total += bytesRead;
-                publishProgress((total*100)/fileSize);
-//                System.out.println("Downloaded FTP " + total + " % " + (total*100)/fileSize);
+                completed = (total * 100.0 / fileSize);
+
+                publishProgress((int)Math.round(completed));
             }
 
             boolean success = ftp.completePendingCommand();
