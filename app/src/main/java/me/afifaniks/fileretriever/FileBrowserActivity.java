@@ -88,7 +88,6 @@ public class FileBrowserActivity extends AppCompatActivity {
                             .setNegativeButton(android.R.string.no, null).show();
                 } else {
                     path = clickedItem.getPath();
-                    currentLocation.setText(path);
                     new Browse(FileBrowserActivity.this, ip, port).execute(path);
                 }
             }
@@ -111,6 +110,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                 numOfDirs++;
             }
         }
+        currentLocation.setText(path);
         totalFiles.setText("Total Files: " + list.size() + " (Directory: " + numOfDirs + ", File: " + numOfFiles + ")");
         listAdapter.notifyDataSetChanged();
     }
@@ -126,8 +126,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                 if (path.length() == 2)
                     path += "\\";
             }
-
-            currentLocation.setText(path);
+//            currentLocation.setText(path);
             new Browse(FileBrowserActivity.this, ip, port).execute(path);
 
         } else {

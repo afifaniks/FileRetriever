@@ -26,12 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 
-public class Download extends AsyncTask<String, Integer, Void> {
+public class Download extends AsyncTask<String, Integer, Boolean> {
     final static String DOWNLOAD_REQUEST = "::1";
     final static String FTP_DOWNLOAD_REQUEST = "::3";
     final static int BUFFER_SIZE = 1024 * 20;
@@ -59,7 +60,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... strings) {
+    protected Boolean doInBackground(String... strings) {
         fileName = strings[0];
         filePath = strings[1];
         fileSize = Integer.valueOf(strings[2]);
@@ -68,7 +69,8 @@ public class Download extends AsyncTask<String, Integer, Void> {
         DataOutputStream dataOutputStream = null;
 
         try {
-            s = new Socket(ip, port);
+            s = new Socket();
+            s.connect(new InetSocketAddress(ip, Integer.valueOf(port)), 5000);
 
             dInputStream = new DataInputStream(s.getInputStream());
             dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -86,8 +88,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
             pathToSave = downloadPath + File.separator + fileName;
 
             boolean ftpDownloadStatus = false;
-
-            System.out.println("File Size: " + fileSize + " TCP: " + TCP_SIZE_LIMIT);
+//            progressDialog.setTitle("Download Started");
 
             if (fileSize > TCP_SIZE_LIMIT) { // TODO: Gotta FIX FTP Speed. ONLY THEN I CAN USE THIS BLOCK
                 dataOutputStream.writeUTF(FTP_DOWNLOAD_REQUEST + filePath);
@@ -110,6 +111,9 @@ public class Download extends AsyncTask<String, Integer, Void> {
 
                         timeTaken = estimatedTime/1000.0;
 
+                        s.close();
+
+                        return true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -119,6 +123,7 @@ public class Download extends AsyncTask<String, Integer, Void> {
 
             if (!ftpDownloadStatus) {
                 try {
+//                    progressDialog.setTitle("Download Started");
                     progressDialog.setMessage("Downloading using TCP connecttion");
                     dataOutputStream.writeUTF(DOWNLOAD_REQUEST + filePath);
                     FileOutputStream fos = null;
@@ -146,9 +151,9 @@ public class Download extends AsyncTask<String, Integer, Void> {
                     timeTaken = estimatedTime/1000.0;
 
                     fos.close();
-
-
                     s.close();
+
+                    return true;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -160,24 +165,24 @@ public class Download extends AsyncTask<String, Integer, Void> {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
     }
 
     @Override
     protected void onProgressUpdate(Integer... values) {
         progressDialog.setProgress(values[0]);
+        progressDialog.setTitle("Downloading...");
         progressDialog.setMessage("Downloading file: " + filePath);
     }
 
     @Override
     protected void onPreExecute() {
         progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Downloading file: " + filePath);
-        progressDialog.setTitle("Download Started");
+        progressDialog.setMessage("Trying to establish a connection...");
+        progressDialog.setTitle("Starting Download...");
         progressDialog.setMax(100);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setIndeterminate(false);
-//        progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                 "Cancel",
@@ -196,11 +201,15 @@ public class Download extends AsyncTask<String, Integer, Void> {
                         } catch (Exception e) {
                             e.printStackTrace();
                         } finally {
-                            File file = new File(pathToSave);
-                            if (file.delete()) {
-                                System.out.println("Deleted Incomplete Download");
-                            } else {
-                                System.out.println("Couldn't Delete Incomplete Download");
+                            try {
+                                File file = new File(pathToSave);
+                                if (file.delete()) {
+                                    System.out.println("Deleted Incomplete Download");
+                                } else {
+                                    System.out.println("Couldn't Delete Incomplete Download");
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                     }
@@ -211,22 +220,30 @@ public class Download extends AsyncTask<String, Integer, Void> {
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        Toast.makeText(context, "File Download Complete", Toast.LENGTH_SHORT).show();
-        new AlertDialog.Builder(context)
-                .setTitle("Download Completed")
-                .setMessage("File Downloaded Successfully" + "\n" +
-                        "Time Taken: " + df.format(timeTaken) + "s\n" +
-                        "Avg. Transfer Rate: " + df.format((fileSize*0.000001)/timeTaken) +"MBps")
-                .setIcon(R.drawable.success)
-                .setPositiveButton("Show Files", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        Uri uri = Uri.parse(downloadPath); // a directory
-                        intent.setDataAndType(uri, "*/*");
-                        context.startActivity(Intent.createChooser(intent, "Open Folder"));
-                    }}).setNegativeButton("CLOSE", null).show();
+    protected void onPostExecute(Boolean downloadStatus) {
         progressDialog.dismiss();
+
+        if (downloadStatus) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Download Completed")
+                    .setMessage("File Downloaded Successfully" + "\n" +
+                            "Time Taken: " + df.format(timeTaken) + "s\n" +
+                            "Avg. Transfer Rate: " + df.format((fileSize*0.000001)/timeTaken) +"MBps")
+                    .setIcon(R.drawable.success)
+                    .setPositiveButton("Show Files", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                            Uri uri = Uri.parse(downloadPath); // a directory
+                            intent.setDataAndType(uri, "*/*");
+                            context.startActivity(Intent.createChooser(intent, "Open Folder"));
+                        }}).setNegativeButton("CLOSE", null).show();
+        } else {
+            new AlertDialog.Builder(context)
+                    .setTitle("Download Failed")
+                    .setMessage("Couldn't complete downloading. Please try again.")
+                    .setIcon(R.drawable.warning)
+                    .setNegativeButton("CLOSE", null).show();
+        }
     }
 
     private void FTPDownloader(String host, int port, String user, String pwd) throws Exception {

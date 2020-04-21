@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -43,8 +45,8 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
 
         Socket s = null;
         try {
-            s = new Socket(ip, port);
-            System.out.println(s.isConnected() + "SOCKET CHECK");
+            s = new Socket();
+            s.connect(new InetSocketAddress(ip, Integer.valueOf(port)), 5000);
 
             DataOutputStream dOutputStream = null;
             DataInputStream dataInputStream = null;
@@ -102,9 +104,21 @@ public class Browse extends AsyncTask<String, Void, ArrayList<FileHandler>> {
 
     @Override
     protected void onPostExecute(ArrayList<FileHandler> list) {
-        FileBrowserActivity f = (FileBrowserActivity)context;
-        f.changeListItem(list);
         progressDialog.dismiss();
+
+        if (list == null) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Connection Failure")
+                    .setMessage("Make sure your PC Server Agent is connected to the same network and recheck ip and port.")
+                    .setIcon(R.drawable.warning)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                        }}).show();
+        } else {
+            FileBrowserActivity f = (FileBrowserActivity)context;
+            f.changeListItem(list);
+        }
     }
 
 }
