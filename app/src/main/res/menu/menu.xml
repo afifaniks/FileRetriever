@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Connection"
+        android:id="@+id/menuConnect"/>
+
+    <item
+        android:title="Settings"
+        android:id="@+id/menuSettings"/>
+
+    <item
+        android:title="About"
+        android:id="@+id/menuAbout"/>
+
+    <item
+        android:title="Exit App"
+        android:id="@+id/menuExitApp"/>
+
+
+</menu>

@@ -1,29 +1,26 @@
 package me.afifaniks.fileretriever;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import androidx.appcompat.widget.Toolbar;
 import java.net.Socket;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class FileBrowserActivity extends AppCompatActivity {
 
@@ -31,6 +28,7 @@ public class FileBrowserActivity extends AppCompatActivity {
     private ListView listView;
     private TextView currentLocation;
     private TextView totalFiles;
+    private Toolbar toolbar;
     private static ListAdapter listAdapter;
     private static ArrayList<FileHandler> fileList = new ArrayList<>();
     private static DecimalFormat df = new DecimalFormat("0.00");
@@ -53,6 +51,8 @@ public class FileBrowserActivity extends AppCompatActivity {
         listView = findViewById(R.id.listFile);
         currentLocation = findViewById(R.id.txtLocation);
         totalFiles = findViewById(R.id.txtTotalFiles);
+        toolbar = findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
 
         currentLocation.setText(path);
 
@@ -96,6 +96,37 @@ public class FileBrowserActivity extends AppCompatActivity {
         listView.setAdapter(listAdapter);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menuConnect) {
+
+        } else if (id == R.id.menuSettings) {
+
+        } else if (id == R.id.menuAbout) {
+
+        } else if (id == R.id.menuExitApp) {
+            new AlertDialog.Builder(FileBrowserActivity.this)
+                    .setTitle("Exit Application")
+                    .setMessage("Do you really want to exit?")
+                    .setIcon(R.drawable.download)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            finishAffinity();
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
+        }
+        return true;
+    }
+
     public void changeListItem(ArrayList<FileHandler> list) {
         fileList.clear();
         fileList.addAll(list);
@@ -126,7 +157,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                 if (path.length() == 2)
                     path += "\\";
             }
-//            currentLocation.setText(path);
+
             new Browse(FileBrowserActivity.this, ip, port).execute(path);
 
         } else {
