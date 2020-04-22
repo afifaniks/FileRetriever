@@ -39,7 +39,6 @@ public class Client extends AsyncTask <String, Void, Socket> {
             return clientSocket;
 
         } catch (IOException e) {
-//            Toast.makeText(context, "Couldn't establish connection. Please check IP & port again", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

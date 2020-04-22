@@ -108,6 +108,10 @@ public class FileBrowserActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.menuConnect) {
+            // Opening Connection Interface
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("reqNewConnection", true);
+            startActivity(intent);
 
         } else if (id == R.id.menuSettings) {
 
@@ -117,7 +121,7 @@ public class FileBrowserActivity extends AppCompatActivity {
             new AlertDialog.Builder(FileBrowserActivity.this)
                     .setTitle("Exit Application")
                     .setMessage("Do you really want to exit?")
-                    .setIcon(R.drawable.download)
+                    .setIcon(R.drawable.warning)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             finishAffinity();

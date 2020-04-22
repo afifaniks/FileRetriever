@@ -60,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
         portField = findViewById(R.id.txtPort);
         connectBtn = findViewById(R.id.btnConnect);
 
+        boolean newConnectionRequest = getIntent().getBooleanExtra("reqNewConnection", false);
+
+        System.out.println("New Connection Req: " + newConnectionRequest);
+
         connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,11 +76,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Trying initially to connect
-        ip = ipField.getText().toString();
-        port = portField.getText().toString();
+        if (!newConnectionRequest) { // Only will be initiated if MainActivity is not called in runtime
+            // Trying initially to connect
+            ip = ipField.getText().toString();
+            port = portField.getText().toString();
 
-        new Client(this).execute(ip, port);
+            new Client(this).execute(ip, port);
+        }
 
     }
 }
