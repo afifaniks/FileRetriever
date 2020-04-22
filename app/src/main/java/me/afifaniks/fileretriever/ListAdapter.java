@@ -50,6 +50,7 @@ public class ListAdapter extends ArrayAdapter<FileHandler> {
             size = "-/-";
         } else if (file.getType().equals("drive")) {
             fileIcon.setImageResource(R.drawable.drive);
+            name = "Logical Drive (" + name + ")";
             size = "-/-";
         }
         else {
