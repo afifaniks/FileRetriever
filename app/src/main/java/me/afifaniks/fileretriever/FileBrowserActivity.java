@@ -116,7 +116,8 @@ public class FileBrowserActivity extends AppCompatActivity {
         } else if (id == R.id.menuSettings) {
 
         } else if (id == R.id.menuAbout) {
-
+            Intent i = new Intent(this, AboutActivity.class);
+            startActivity(i);
         } else if (id == R.id.menuExitApp) {
             new AlertDialog.Builder(FileBrowserActivity.this)
                     .setTitle("Exit Application")

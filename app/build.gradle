@@ -8,9 +8,14 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0.1-BOOT"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    applicationVariants.all { variant ->
+        variant.resValue "string", "versionName", variant.versionName
+    }
+
     buildTypes {
         release {
             minifyEnabled false

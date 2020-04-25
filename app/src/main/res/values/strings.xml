@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">File Retriever</string>
+    <string name="app_version">1.0.0.1-BOOT</string>
     <string name="exit_confirmation">Press Back again to exit</string>
 </resources>
