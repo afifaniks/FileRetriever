@@ -35,17 +35,28 @@
         android:textSize="12sp"
         android:text="Author"/>
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:autoLink="all"
-        android:layout_margin="5dp"
-        android:linksClickable="true"
-        android:clickable="true"
-        android:id="@+id/txtAuthorLink"
-        android:text="Afif Al Mamun"/>
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/link"
+            android:layout_gravity="center"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:autoLink="all"
+            android:layout_margin="5dp"
+            android:linksClickable="true"
+            android:clickable="true"
+            android:id="@+id/txtAuthorLink"
+            android:text="@string/dev_name"/>
+
+    </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
