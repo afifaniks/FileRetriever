@@ -113,7 +113,7 @@ public class FileBrowserActivity extends AppCompatActivity {
             intent.putExtra("reqNewConnection", true);
             startActivity(intent);
 
-        } else if (id == R.id.menuSettings) {
+//        } else if (id == R.id.menuSettings) {
 
         } else if (id == R.id.menuAbout) {
             Intent i = new Intent(this, AboutActivity.class);

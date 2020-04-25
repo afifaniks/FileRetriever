@@ -4,9 +4,9 @@
         android:title="Connection"
         android:id="@+id/menuConnect"/>
 
-    <item
-        android:title="Settings"
-        android:id="@+id/menuSettings"/>
+<!--    <item-->
+<!--        android:title="Settings"-->
+<!--        android:id="@+id/menuSettings"/>-->
 
     <item
         android:title="About"
