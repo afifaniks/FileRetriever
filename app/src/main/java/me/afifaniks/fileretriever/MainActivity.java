@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.InputFilter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,6 +60,33 @@ public class MainActivity extends AppCompatActivity {
         ipField = findViewById(R.id.txtIP);
         portField = findViewById(R.id.txtPort);
         connectBtn = findViewById(R.id.btnConnect);
+
+        // ipField only takes valid input like XXX.XXX.XXX.XXX
+        InputFilter[] filters = new InputFilter[1];
+        filters[0] = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       android.text.Spanned dest, int dstart, int dend) {
+                if (end > start) {
+                    String destTxt = dest.toString();
+                    String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
+                    if (!resultingTxt.matches ("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
+                        return "";
+                    } else {
+                        String[] splits = resultingTxt.split("\\.");
+                        for (int i=0; i<splits.length; i++) {
+                            if (Integer.valueOf(splits[i]) > 255) {
+                                return "";
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+
+        };
+
+        ipField.setFilters(filters);
 
         boolean newConnectionRequest = getIntent().getBooleanExtra("reqNewConnection", false);
 

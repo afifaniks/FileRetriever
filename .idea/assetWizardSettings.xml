@@ -36,7 +36,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/E:/Installs/Android/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_more_vert_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/E:/Installs/Android/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_launch_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -46,9 +46,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="menu" />
+                                      <entry key="outputName" value="link" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="ffffff" />
+                                      <entry key="themeColor" value="666666" />
                                     </map>
                                   </option>
                                 </PersistentState>

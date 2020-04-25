@@ -6,7 +6,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import java.net.Socket;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
 
 public class FileBrowserActivity extends AppCompatActivity {
 
