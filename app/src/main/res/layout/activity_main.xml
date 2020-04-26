@@ -45,10 +45,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
-            android:minWidth="150dp"
+            android:minWidth="170dp"
             android:gravity="center"
             android:layout_margin="5dp"
-            android:text="192.168.0.102"
+            android:text=""
             android:inputType="numberDecimal"
             android:digits="0123456789."/>
     </LinearLayout>
@@ -72,7 +72,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textSize="20dp"
-            android:text="19051"
+            android:text=""
             android:inputType="numberDecimal"
             android:digits="0123456789"/>
     </LinearLayout>

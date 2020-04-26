@@ -6,10 +6,12 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.InputFilter;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static String ip;
     private static String port;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String SHARED_PREF = "fileRetrieverPref";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -61,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
         portField = findViewById(R.id.txtPort);
         connectBtn = findViewById(R.id.btnConnect);
 
+        // Setting data from shared preference
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String prefIP = sharedPreferences.getString("IP", "");
+        String prefPort = sharedPreferences.getString("PORT", "");
+
+        System.out.println("Test" + prefIP);
+
+        // Setting preffered values
+        ipField.setText(prefIP);
+        portField.setText(prefPort);
+
         // ipField only takes valid input like XXX.XXX.XXX.XXX
         InputFilter[] filters = new InputFilter[1];
         filters[0] = new InputFilter() {
@@ -90,16 +104,23 @@ public class MainActivity extends AppCompatActivity {
 
         boolean newConnectionRequest = getIntent().getBooleanExtra("reqNewConnection", false);
 
-        System.out.println("New Connection Req: " + newConnectionRequest);
-
         connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ip = ipField.getText().toString();
                 port = portField.getText().toString();
 
-                Client client = new Client(MainActivity.this);
-                client.execute(ip, port);
+                if (!(ip.equals("") || port.equals(""))) {
+                    // Saving data automatically
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("IP", ip);
+                    editor.putString("PORT", port);
+                    editor.commit();
+
+                    Client client = new Client(MainActivity.this);
+                    client.execute(ip, port);
+                }
 
             }
         });
@@ -109,7 +130,9 @@ public class MainActivity extends AppCompatActivity {
             ip = ipField.getText().toString();
             port = portField.getText().toString();
 
-            new Client(this).execute(ip, port);
+            if (!(ip.equals("") || port.equals(""))) {
+                new Client(this).execute(ip, port);
+            }
         }
 
     }
