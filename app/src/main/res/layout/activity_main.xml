@@ -22,6 +22,13 @@
         android:textSize="30dp"
         android:layout_margin="20dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="12dp"
+        android:text="Please enter the IP address and port \nshown in PC server agent.."/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
