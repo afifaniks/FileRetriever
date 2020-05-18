@@ -5,14 +5,14 @@
 
 **The tool can simply browse and download PC files in your android  device connected to the same network.** 
 
-**Sample Screenshot:**
+**Sample Screenshots:**
 ![Client 1](screenshots/ss1.jpg)
 ![Client 2](screenshots/ss2.jpg)
 ![Client 3](screenshots/ss3.jpg)
 ![Server](screenshots/ss5.jpg)
 
 **Project Video:**
-[https://www.youtube.com/watch?v=UVw7neMnN34&t=91s](https://www.youtube.com/watch?v=UVw7neMnN34&t=91s)
+[https://youtu.be/gJ8J3rzevB8](https://youtu.be/gJ8J3rzevB8)
 
 **Features:**
 -   PC file browsing
