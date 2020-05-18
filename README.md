@@ -22,8 +22,7 @@
 -   Minimal UI
 
 **Installation:**
-You can build your own executables from this repo for the client Android app and server app from ([https://github.com/afifaniks/FileRetrieverServer](https://github.com/afifaniks/FileRetrieverServer).
-Or you can simply download and install binaries from [here.](https://github.com/afifaniks/FileRetriever/releases)
+You can build your own executables from this repo for the client Android app and server app or you can simply download and install binaries from [here.](https://github.com/afifaniks/FileRetriever/releases)
 
 **CAUTION:**
 -   Both host and client devices have to be connected in the same network.
